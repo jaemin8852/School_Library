@@ -20,7 +20,7 @@ import android.widget.Toast;
 public class WebViewActivity extends AppCompatActivity {
 
     WebView wv;
-    String url = "http://reading.ssem.or.kr/r/reading/search/schoolCodeSetting.jsp?schoolCode=31051&returnUrl=";
+    String url = "http://reading.ssem.or.kr/r/reading/search/";
     Handler mHandler;
     Button btn;
     int current_code= -1;
@@ -41,7 +41,8 @@ public class WebViewActivity extends AppCompatActivity {
 
         wv = findViewById(R.id.web_view);
         wv.getSettings().setJavaScriptEnabled(true);
-        wv.loadUrl(url);
+        if(pref.getInt("code", -1) != -1) wv.loadUrl(url.concat("schoolCodeSetting.jsp?schoolCode="+pref.getInt("code", -1)+"&returnUrl="));
+        else wv.loadUrl(url.concat("schoolListForm.jsp"));
         wv.setWebViewClient(new WebViewClientClass());
 
 
