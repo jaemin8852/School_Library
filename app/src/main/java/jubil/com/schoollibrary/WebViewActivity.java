@@ -2,6 +2,7 @@ package jubil.com.schoollibrary;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
@@ -14,6 +15,7 @@ import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
+import android.widget.Toast;
 
 public class WebViewActivity extends AppCompatActivity {
 
@@ -22,18 +24,26 @@ public class WebViewActivity extends AppCompatActivity {
     Handler mHandler;
     Button btn;
     int current_code= -1;
+    SharedPreferences pref;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.web_view);
 
+        pref = getSharedPreferences("pref", MODE_PRIVATE);
+        btn = findViewById(R.id.btn);
+
+        if(pref.getInt("code", -1) != -1) {
+            btn.setVisibility(View.GONE);
+            Log.d("saved code : ", Integer.toString(pref.getInt("code", -1)));
+        }
+
         wv = findViewById(R.id.web_view);
         wv.getSettings().setJavaScriptEnabled(true);
         wv.loadUrl(url);
         wv.setWebViewClient(new WebViewClientClass());
 
-        btn = findViewById(R.id.btn);
 
         mHandler = new Handler();
         Thread t = new Thread(new Runnable() {
@@ -47,10 +57,14 @@ public class WebViewActivity extends AppCompatActivity {
                         btn.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                Log.d("Url", wv.getUrl());
-                                wv.reload();
-                                Log.d("Url", wv.getUrl());
-                                wv.setWebViewClient(new WebViewClientClass());
+                                if(current_code == -1) Toast.makeText(getApplicationContext(), "Fail", Toast.LENGTH_LONG).show();
+                                else {
+                                    Toast.makeText(getApplicationContext(), "Success!", Toast.LENGTH_LONG).show();
+                                    SharedPreferences.Editor editor = pref.edit();
+                                    editor.putInt("code", current_code);
+                                    editor.commit();
+                                    btn.setVisibility(View.GONE);
+                                }
                             }
                         });
                     }
@@ -77,7 +91,7 @@ public class WebViewActivity extends AppCompatActivity {
         }
 
         @Override
-        public void onPageStarted(WebView view, String url, Bitmap favicon) {
+        public void onPageStarted(WebView view, String url, Bitmap favicon) {       //School code를 가져옴.
             Log.d("", "getUrl : " + view.getUrl());
             Log.d("", "url : " + url);
             if(url.contains("schoolCode")) current_code = Integer.parseInt(url.substring(url.indexOf('?')+12, url.indexOf('&')));
