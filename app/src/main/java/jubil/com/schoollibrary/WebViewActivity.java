@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
@@ -57,6 +58,15 @@ public class WebViewActivity extends AppCompatActivity {
             }
         });
         t.start();
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if ((keyCode == KeyEvent.KEYCODE_BACK) && wv.canGoBack()) {
+            wv.goBack();
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
     }
 
     private class WebViewClientClass extends WebViewClient {
