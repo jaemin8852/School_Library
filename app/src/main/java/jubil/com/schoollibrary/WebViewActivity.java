@@ -41,6 +41,8 @@ public class WebViewActivity extends AppCompatActivity {
 
         wv = findViewById(R.id.web_view);
         wv.getSettings().setJavaScriptEnabled(true);
+        wv.getSettings().setBuiltInZoomControls(true);
+        wv.getSettings().setSupportZoom(true);
         if(pref.getInt("code", -1) != -1) wv.loadUrl(url.concat("schoolCodeSetting.jsp?schoolCode="+pref.getInt("code", -1)+"&returnUrl="));
         else wv.loadUrl(url.concat("schoolListForm.jsp"));
         wv.setWebViewClient(new WebViewClientClass());
